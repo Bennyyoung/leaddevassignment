@@ -124,7 +124,48 @@ app.get('/order_items', async (req, res) => {
         });
     }
     catch (err) {
-        res.status(500).json({ error: 'Could not fetch the document', err })
+        res.status(500).json({ error: 'Could not fetch the documents', err })
+    }
+})
+
+app.get('/order_items/:id', async (req, res) => {
+    let personOrder = []
+    try {
+        console.log(ObjectId.isValid(req.params.id))
+        if(ObjectId.isValid(req.params.id)) {
+                await db.collection('olist_order_items_dataset')
+                .aggregate([
+                    {
+                        $lookup: {
+                            from: 'olist_products_dataset',
+                            localField: 'product_id',
+                            foreignField: 'product_id',
+                            as: 'order_products'
+                        },
+                    },
+                    {
+                        $project: {
+                            "order_item_id": 1,
+                            "product_id": 1,
+                            "order_products.product_category_name": 1,
+                            "price": 1,
+                            "shipping_limit_date": 1
+                        }
+                    }
+    
+                ])
+                .findOne({_id: new ObjectId(req.params.id)})
+                .forEach(order => {
+                    personOrder.push(order)
+                })
+                console.log('personOrder', personOrder)
+                res.status(200).json(personOrder)
+        } else {
+            res.status(500).json({error: "Could't fetch the document"})
+        }
+        
+    } catch (error) {
+        res.status(500).json({ error: " Couldn't fetch the document"})
     }
 })
 
@@ -140,6 +181,62 @@ app.delete('/order_items/:id', async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({ error: 'Could not delete sellers details' })
+    }
+})
+
+app.patch('/order_items/:id', async (req, res) => {
+    let received = req.body
+    // order_item_id: "1"
+    // order_products: [{…}]
+    // price: "12.99"
+    // product_id: "7634da152a4610f1595efa32f14722fc"
+    // shipping_limit_date: "2018-08-15 10:10:18"
+    // _id: "6398cc3e3a624c005eb20873"
+
+    // {
+    //     orderItemId: '2',
+    //     productCategoryName: '2',
+    //     price: '2',
+    //     shippingLimitDate: '2'
+    //   }
+
+    const updates = {
+        order_item_id: received.orderItemId,
+        order_products: received.productCategoryName,
+        price: received.price,
+        shipping_limit_date: received.shippingLimitDate
+    }
+    console.log(updates)
+    try {
+        if(ObjectId.isValid(req.params.id)) {
+            const result = await db.collection('olist_order_items_dataset')
+            .aggregate([
+                {
+                    $lookup: {
+                        from: 'olist_products_dataset',
+                        localField: 'product_id',
+                        foreignField: 'product_id',
+                        as: 'order_products'
+                    },
+                },
+                {
+                    $project: {
+                        "order_item_id": 1,
+                        "product_id": 1,
+                        "order_products.product_category_name": 1,
+                        "price": 1,
+                        "shipping_limit_date": 1
+                    }
+                }
+
+            ])
+            .updateOne({_id: new ObjectId(req.params.id)}, {$set: updates})
+            res.status(200).json(result)
+        } else {
+            res.status(500).json({ error: "Couldn't update document"})
+        }
+    } catch (error) {
+        res.status(500).json({ error: "Coudn't update document"})
     }
 })
 

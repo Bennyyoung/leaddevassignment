@@ -35,18 +35,18 @@ const Home = (props: HomeProps) => {
   // const handleOffset = (index: any, el: any) => {
   //   setOffset(offset + el)
   // }
-  console.log('offset', offset)
+  // console.log('offset', offset)
 
   const { token } = props
-  console.log(token.seller_id)
+  // console.log(token.seller_id)
 
   const handlePageChange = (e: any) => {
-    console.log(e)
+    // console.log(e)
     setOffset(e.selected)
 
   }
 
-  console.log("result", result)
+  // console.log("result", result)
 
   return (
     <>

@@ -25,6 +25,11 @@ const DisplayTable = (props: DisplayTableProps) => {
         <td>{props?.item?.price}</td>
         <td>{props?.item?.shipping_limit_date}</td>
         <td>
+            <Link to={`/edit-order/${props?.item?._id}`}>
+                <button>Edit</button>
+            </Link>
+        </td>
+        <td>
             <Link to="#" onClick={() => props.deleteOrder(props?.item?._id)}>
                 <button>Delete</button>
             </Link>
@@ -36,8 +41,8 @@ const DisplayTable = (props: DisplayTableProps) => {
 
 const deleteOrder = async(id: any) => {
     const res = await axios.delete(`http://localhost:5000/order_items/${id}`)
-    console.log(res);
-    console.log('Order sucessfully deleted');
+    // console.log(res);
+    // console.log('Order sucessfully deleted');
 }
 
 //   id: order_item_id,
@@ -59,7 +64,7 @@ const Table = (props: TableProps) => {
     const holdResult = (result: any) => {
         return (
             result.map((el: any, index: any) => {
-                console.log("index: ",index)
+                // console.log("index: ",index)
                 return <DisplayTable item={el} deleteOrder={deleteOrder} key={index} id={index} />
             })
         )

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Routes, Route } from "react-router-dom"
-import Login from './pages/Login';
+import {Login, Home, EditOrder} from './pages';
 import useToken from './customHook/useToken';
-import Home from './pages/Home';
 import "./App.css"
 
 
@@ -19,6 +18,7 @@ function App() {
     <div>
       <Routes>
         <Route path="/home" element={<Home token={token} />} />
+        <Route path="/edit-order/:id" element={<EditOrder />} />
       </Routes>
       
     </div>
